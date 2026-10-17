@@ -71,5 +71,11 @@ The agent:
 
 See [the research policy](docs/research-policy.md), [security policy](SECURITY.md), and [contribution guide](CONTRIBUTING.md). Licensed under MIT.
 
+## Governance docs
+
+- [Skills index](docs/skills-index.md): maps each skill to its purpose, triggers, version, and evaluation scenarios, so maintainers can see coverage and keep versions in sync.
+- [Review workflow guide](docs/review-workflow.md): where review artifacts live, how they are named and updated, and the path from draft to a human decision.
+- [Review quality checklist](docs/review-quality-checklist.md): a short pre-acceptance check aligned with the agent contract.
+
 Maintainers can use [the evaluation cases](evals/cases.md) for manual regression testing after changing the agent or a skill.
 The [GI Portal large-file upload fixture](evals/gi-portal-large-file-upload.md) provides a realistic end-to-end enterprise scenario. Store any generated static-contract or live-run results under `.tool-output/evals/` so they remain local outputs rather than tracked repository content.

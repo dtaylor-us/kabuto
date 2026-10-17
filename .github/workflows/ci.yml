@@ -20,6 +20,9 @@ jobs:
           test -f .github/copilot-instructions.md
           test -f .github/prompts/review-architecture.prompt.md
           test -f docs/templates/architecture-review-template.md
+          test -f docs/skills-index.md
+          test -f docs/review-workflow.md
+          test -f docs/review-quality-checklist.md
           test -f evals/cases.md
           test -f evals/gi-portal-large-file-upload.md
           mapfile -t skills < <(find .github/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort)
@@ -33,6 +36,12 @@ jobs:
             done
           done
           test "$(grep -h '^name: ' "${skills[@]}" | sort -u | wc -l | tr -d ' ')" -eq 9
+          for skill in "${skills[@]}"; do
+            name="$(basename "$(dirname "$skill")")"
+            version="$(sed -nE 's/^# .+ — ([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' "$skill")"
+            grep -Fq "| \`${name}\` |" docs/skills-index.md
+            grep -Eq "^\| \`${name}\` \|.*\| ${version} \|" docs/skills-index.md
+          done
           grep -Fqx 'tools: ["read", "edit", "search", "web"]' .github/agents/architecture-assistant.agent.md
           grep -Fqx 'disable-model-invocation: true' .github/agents/architecture-assistant.agent.md
           grep -Fqx 'user-invocable: true' .github/agents/architecture-assistant.agent.md
