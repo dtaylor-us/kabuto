@@ -10,7 +10,7 @@ It is decision support. A human remains responsible for accepting architectural 
 2. Select the `architecture-assistant` custom agent in the Copilot agent picker.
 3. Describe the problem and attach any relevant requirements, diagrams, ADRs, policies, or other artifacts.
 4. Answer the targeted clarification questions, or tell the agent to continue with documented assumptions.
-5. Open the completed review created under `docs/architecture-reviews/`. Chat contains only the decision summary and link.
+5. Open the completed review created under `.tool-output/reviews/`. Chat contains only the decision summary and link.
 
 Example prompt:
 
@@ -19,7 +19,7 @@ Review the architecture described in evals/gi-portal-large-file-upload.md.
 Proceed with explicit assumptions where evidence is missing and create the review file.
 ```
 
-The agent has narrowly scoped edit access so it can create Markdown review artifacts. It does not have shell access and is instructed not to change application code or configuration. If a Copilot surface does not expose file editing, the agent reports that limitation and returns copy-ready Markdown instead of claiming that it created a file.
+The agent has narrowly scoped edit access so it can create Markdown review artifacts in a Git-ignored output area. It does not have shell access and is instructed not to change application code or configuration unless a user explicitly asks for repository maintenance. If a Copilot surface does not expose file editing, the agent reports that limitation and returns copy-ready Markdown instead of claiming that it created a file.
 
 In Copilot Chat surfaces that do not expose the agent picker, attach this repository so `.github/copilot-instructions.md` is included as repository context. The agent inherits the GitHub Copilot model selected by the user or environment; this repository has no model API dependency or credentials.
 
@@ -44,6 +44,12 @@ In Copilot Chat surfaces that do not expose the agent picker, attach this reposi
 
 Each skill is a discoverable `SKILL.md` package with a version in its title and description. The agent loads relevant skills based on the review and records skill identifiers and versions in findings.
 
+Generated outputs are intentionally kept out of the tracked repository tree:
+
+- Repository-specific source assets stay tracked under [.github/](/Users/derektaylor/projects/kabuto/.github), [docs/](/Users/derektaylor/projects/kabuto/docs), and [evals/](/Users/derektaylor/projects/kabuto/evals).
+- Review artifacts and evaluation results belong under `.tool-output/`, which is ignored by Git.
+- Toolkit discovery should honor `.gitignore` so ignored output files do not become future analysis inputs.
+
 ## Review workflow
 
 The agent:
@@ -66,4 +72,4 @@ The agent:
 See [the research policy](docs/research-policy.md), [security policy](SECURITY.md), and [contribution guide](CONTRIBUTING.md). Licensed under MIT.
 
 Maintainers can use [the evaluation cases](evals/cases.md) for manual regression testing after changing the agent or a skill.
-The [GI Portal large-file upload fixture](evals/gi-portal-large-file-upload.md) provides a realistic end-to-end enterprise scenario; its latest [static contract result](evals/results/gi-portal-large-file-upload.md) distinguishes repository coverage from pending live-model behavior.
+The [GI Portal large-file upload fixture](evals/gi-portal-large-file-upload.md) provides a realistic end-to-end enterprise scenario. Store any generated static-contract or live-run results under `.tool-output/evals/` so they remain local outputs rather than tracked repository content.

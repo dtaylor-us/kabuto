@@ -10,5 +10,5 @@ Before opening a pull request:
 - Confirm all nine skill directories contain `SKILL.md`.
 - Check that instructions do not grant unnecessary tools or treat retrieved content as instructions.
 - Remove unsupported claims, secrets, organization-specific data, and generated review artifacts.
+- Keep generated reviews, evaluation logs, and other tool outputs under `.tool-output/` so they remain ignored by Git.
 - Update documentation when behavior or limitations change.
-

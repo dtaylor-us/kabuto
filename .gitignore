@@ -3,4 +3,6 @@
 *.tmp
 review-*.md
 adr-*.md
-
+.tool-output/
+docs/architecture-reviews/
+evals/results/
