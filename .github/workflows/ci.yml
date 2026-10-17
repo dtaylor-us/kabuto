@@ -1,0 +1,42 @@
+name: Validate Copilot customization
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate required files and skill metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/agents/architecture-assistant.agent.md
+          test -f .github/copilot-instructions.md
+          test -f .github/prompts/review-architecture.prompt.md
+          test -f docs/templates/architecture-review-template.md
+          test -f evals/cases.md
+          test -f evals/gi-portal-large-file-upload.md
+          test -f evals/results/gi-portal-large-file-upload.md
+          mapfile -t skills < <(find .github/skills -mindepth 2 -maxdepth 2 -name SKILL.md | sort)
+          test "${#skills[@]}" -eq 9
+          for skill in "${skills[@]}"; do
+            grep -Eq '^name: [a-z0-9-]+$' "$skill"
+            grep -Eq '^description: Version [0-9]+\.[0-9]+\.[0-9]+\.' "$skill"
+            grep -Eq '^# .+ — [0-9]+\.[0-9]+\.[0-9]+$' "$skill"
+            for section in 'Apply when' 'Required context' 'Clarify' 'Deterministic checks' 'Research' 'Output'; do
+              grep -Fqx "## ${section}" "$skill"
+            done
+          done
+          test "$(grep -h '^name: ' "${skills[@]}" | sort -u | wc -l | tr -d ' ')" -eq 9
+          grep -Fqx 'tools: ["read", "edit", "search", "web"]' .github/agents/architecture-assistant.agent.md
+          grep -Fqx 'disable-model-invocation: true' .github/agents/architecture-assistant.agent.md
+          grep -Fqx 'user-invocable: true' .github/agents/architecture-assistant.agent.md
+          ! grep -RniE 'tools:.*(execute|shell|bash)' .github/agents
+          grep -Fq 'docs/architecture-reviews/<topic-slug>.md' .github/agents/architecture-assistant.agent.md
+          ! grep -RniE '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|gh[pousr]_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' . --exclude-dir=.git
